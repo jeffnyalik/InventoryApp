@@ -11,6 +11,22 @@ from .utils import get_access_token
 from datetime import datetime
 from .custom_methods import IsAuthenticatedCustom
 
+
+"""""
+User activities function
+
+"""
+
+def add_user_activity(user, action):
+    UserActivities.objects.create(
+        user_id= user.id,
+        email = user.email,
+        fullName = user.fullName,
+        action = action
+    )
+
+""""end function """
+
 class CreateUserView(ModelViewSet):
     http_method_names = "post"
     queryset = CustomUser.objects.all()
@@ -21,6 +37,8 @@ class CreateUserView(ModelViewSet):
         valid_request = self.serializer_class(data=request.data)
         valid_request.is_valid(raise_exception=True)
         CustomUser.objects.create(**valid_request._validated_data)
+
+        add_user_activity(request.user, "added a new user")
 
         return Response(
             {"success": "user created successfully"},
@@ -70,6 +88,8 @@ class LoginView(ModelViewSet):
         user.last_login = datetime.now()
         user.save()
 
+        add_user_activity(user, 'Logged in')
+
         return Response({"access": access})
 
 class UpdatePasswordView(ModelViewSet):
@@ -89,6 +109,8 @@ class UpdatePasswordView(ModelViewSet):
         user = user[0]
         user.set_password(valid_request.validated_data["password"])
         user.save()
+
+        add_user_activity(user, "Updated password")
 
         return Response({"success": "password updated successfully"})
 
