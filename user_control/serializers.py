@@ -1,6 +1,7 @@
+from dataclasses import fields
 from pkg_resources import require
 from rest_framework import serializers
-from .models import Roles, CustomUser
+from .models import Roles, CustomUser, UserActivities
 
 class CreateUserSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -23,3 +24,9 @@ class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         exclude = ("password")
+
+
+class UserActivitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model =  UserActivities
+        fields = "__all__"

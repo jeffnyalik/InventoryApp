@@ -1,5 +1,11 @@
 from django.urls import path, include
-from .views import CreateUserView, LoginView, MeView, UpdatePasswordView
+from .views import (
+    CreateUserView, 
+    LoginView, 
+    MeView, 
+    UpdatePasswordView, 
+    
+    )
 
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter(trailing_slash=False)

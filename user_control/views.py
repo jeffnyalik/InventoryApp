@@ -1,9 +1,9 @@
 from logging import exception
 from django.shortcuts import render
 from .serializers import CreateUserSerializer, LoginSerializer, UpdatePasswordSerializer
-from .serializers import CustomUserSerializer
+from .serializers import CustomUserSerializer, UserActivitySerializer
 from rest_framework.viewsets import ModelViewSet
-from .models import CustomUser
+from .models import CustomUser, UserActivities
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import authenticate
@@ -101,4 +101,25 @@ class MeView(ModelViewSet):
 
     def list(self, request):
         data = self.serializer_class(request.user).data
+        return Response(data)
+
+
+class UserActivityView(ModelViewSet):
+    serializer_class = UserActivitySerializer
+    http_method_names = "get"
+    queryset = UserActivities.objects.all()
+    permission_classes = (IsAuthenticatedCustom, )
+
+
+
+class UsersView(ModelViewSet):
+    serializer_class = CustomUserSerializer
+    http_method_names = "get"
+    queryset = CustomUser.objects.all()
+    permission_classes = (IsAuthenticatedCustom, )
+
+
+    def list(self, request, *args, **kwargs):
+        users = self.queryset().filter(is_superuser=False)
+        data = self.serializer_class(users, many=True).data
         return Response(data)
